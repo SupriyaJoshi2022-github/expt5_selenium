@@ -4,35 +4,40 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.time.Duration;
 
 public class AppTest {
 
     @Test
     public void testGoogleHomePage() {
-        // Setup ChromeDriver automatically
         WebDriverManager.chromedriver().setup();
 
-        // Use headless Chrome for Jenkins / CI servers
+        // Headless Chrome options
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless"); // Run without GUI
-        options.addArguments("--no-sandbox"); // Required for Linux Jenkins
-        options.addArguments("--disable-dev-shm-usage"); // Avoid memory issues
-        options.addArguments("--disable-gpu"); // Optional but recommended
+        options.addArguments("--headless");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--disable-gpu");
+
         WebDriver driver = new ChromeDriver(options);
 
         try {
-            // Navigate to Google
             driver.get("https://www.google.com");
 
-            // Verify page title
+            // Wait until title contains "Google" (explicit wait)
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            wait.until(ExpectedConditions.titleContains("Google"));
+
+            // Verify the title
             String pageTitle = driver.getTitle();
             System.out.println("Page Title: " + pageTitle);
             assertEquals("Google", pageTitle, "Title should be Google");
         } finally {
-            // Close browser
             driver.quit();
         }
     }
